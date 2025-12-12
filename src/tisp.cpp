@@ -36,11 +36,15 @@ class Compiler {
         while (pos < src.size()) {
             if (isspace(src[pos])) {
                 ++pos;
-            } else if (pos + 1 < src.size() && src[pos] == ';') {
-                while (pos < src.size() && src[pos] != '\n') ++pos;
-            } else {
-                break;
+                continue;
             }
+            
+            if (pos + 1 < src.size() && src[pos] == ';') {
+                while (pos < src.size() && src[pos] != '\n') ++pos;
+                continue;
+            }
+            
+            break;
         }
     }
 
