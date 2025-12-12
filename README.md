@@ -26,7 +26,7 @@ Tisp is a lightweight compiler for a lisp-like programming language that compile
 Compile the compiler itself:
 
 ```bash
-g++ -std=c++17 -o tisp src/tisp.cpp
+g++ -o tisp src/tisp.cpp
 ```
 
 ## Usage
