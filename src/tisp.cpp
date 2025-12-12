@@ -44,6 +44,11 @@ class Compiler {
         }
     }
 
+    void expect(TokenType t, const char* msg) {
+        if (cur.type != t) err(msg);
+        adv();
+    }
+
     [[noreturn]] void err(const char* m) { cerr << "error: " << m << "\n"; exit(1); }
     string ty(Type t) { return t == Type::Float ? "double" : "i32"; }
 
@@ -186,8 +191,7 @@ class Compiler {
                     string fname = cur.val; adv();
                     vector<string> args;
                     while (cur.type == TokenType::Ident) { args.push_back(cur.val); adv(); }
-                    if (cur.type != TokenType::RParen) err("expected )");
-                    adv();
+                    expect(TokenType::RParen, "expected )");
 
                     auto savedVars = vars; auto savedIr = ir.str(); auto savedAllocs = allocs.str();
                     int savedTmp = tmp; string savedBlk = blk;
@@ -206,16 +210,13 @@ class Compiler {
                     vars = savedVars; ir.str(savedIr); ir.seekp(0, ios::end);
                     allocs.str(savedAllocs); allocs.seekp(0, ios::end); tmp = savedTmp; blk = savedBlk;
 
-                    if (cur.type != TokenType::RParen) err("expected )");
-                    adv();
+                    expect(TokenType::RParen, "expected )");
                     return {Type::Int, ""};
                 }
 
                 // (define name value)
-                if (cur.type != TokenType::Ident) err("expected identifier");
-
                 string name = cur.val;
-                adv();
+                expect(TokenType::Ident, "expected identifier");
 
                 Value val = load(parse());
 
@@ -228,8 +229,7 @@ class Compiler {
                 ir << "  store " << ty(val.type) << " " << val.name << ", "
                    << ty(val.type) << "* " << vars[name].name << "\n";
 
-                if (cur.type != TokenType::RParen) err("expected )");
-                adv();
+                expect(TokenType::RParen, "expected )");
                 return {Type::Int, ""};
             }
 
@@ -298,8 +298,7 @@ class Compiler {
                 ir << endL << ":\n"; blk = endL;
                 string res = t();
                 ir << "  " << res << " = phi " << ty(th.type) << " [" << th.name << ", %" << thB << "], [" << el.name << ", %" << elB << "]\n";
-                if (cur.type != TokenType::RParen) err("expected )");
-                adv();
+                expect(TokenType::RParen, "expected )");
                 return {th.type, res};
             }
 
@@ -317,8 +316,7 @@ class Compiler {
                     Value r = load(parse()); rs.push_back({r, blk});
                     ir << "  br label %" << endL << "\n";
                     ir << nextL << ":\n"; blk = nextL;
-                    if (cur.type != TokenType::RBrack) err("expected ]");
-                    adv();
+                    expect(TokenType::RBrack, "expected ]");
                 }
                 rs.push_back({{Type::Int, "0"}, blk});
                 ir << "  br label %" << endL << "\n";
@@ -328,8 +326,7 @@ class Compiler {
                 for (size_t i = 0; i < rs.size(); ++i)
                     ir << (i ? ", " : " ") << "[" << rs[i].first.name << ", %" << rs[i].second << "]";
                 ir << "\n";
-                if (cur.type != TokenType::RParen) err("expected )");
-                adv();
+                expect(TokenType::RParen, "expected )");
                 return {rs[0].first.type, res};
             }
 
@@ -348,10 +345,8 @@ class Compiler {
             }
 
             // (op args...)
-            if (cur.type != TokenType::Op) err("expected operator");
-
             string op = cur.val;
-            adv();
+            expect(TokenType::Op, "expected operator");
 
             Value acc = parse();
             if (cmps.count(op)) {
