@@ -1,19 +1,18 @@
 # Tisp - Tiny Lisp Compiler
 
-Tisp is a lightweight compiler for a lisp-like programming language that compiles to LLVM IR, then generates native code through the LLVM toolchain. The shortcut for a tisp file is `.tsp`, like teaspoon (so pround of this name). The entire "codebase" is one file, and a little bit under 300 lines (excluding newlines and comments).
+Tisp is a lightweight compiler for a mini-lisp programming language that compiles to LLVM IR, then generates native code through the LLVM toolchain. The shortcut for a tisp file is `.tsp`, like teaspoon (so proud of this name). The entire "codebase" is one file, and a little bit under 300 lines (excluding newlines and comments).
 
 ## Features
 
-- **Type system**: Supports integers and floating-point numbers with automatic type promotion
+- **Type system**: Supports integers and floats with automatic type promotion
 - **Functions**: Define and call functions (with recursion support)
 - **Control flow**: 
   - `if` expressions for conditional branching
   - `cond` for multi-way conditionals
-  - `loop` for iteration
+  - `loop` for... looping
 - **Arithmetic operations**: `+`, `-`, `*`, `/`
 - **Comparisons**: `<`, `>`, `=`
 - **Variables**: Local variable definitions with `define`
-- **LLVM backend**: Compiles to LLVM IR, then to native code
 
 ## Requirements
 
@@ -39,7 +38,7 @@ Compile a `.tsp` file to an executable:
 tisp program.tsp
 ```
 
-This will generate an executable with the same name as the input file (without the `.tsp` extension).
+This will generate an executable with the same name as the input file (minus the `.tsp` extension).
 
 ### Command-Line Options
 
@@ -55,13 +54,6 @@ Options:
   --help        Show this help message
   --version     Show version information
 ```
-
-## How It Works
-
-1. **Lexing & Parsing**: The compiler tokenizes and parses the source code into an abstract syntax tree
-2. **IR Generation**: Generates LLVM Intermediate Representation (IR)
-3. **Optimization**: Uses `llc -O2` to optimize and convert IR to assembly
-4. **Linking**: Links the assembly code with GCC or Clang to produce a native executable
 
 ## License
 
